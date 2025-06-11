@@ -1,0 +1,11 @@
+{
+    "printWidth": 120,
+    "semi": true,
+    "trailingComma": "all",
+    "singleAttributePerLine": true,
+ 
+    "importOrder": ["^vite(.*)$","^react/(.*)$", "^@lib/(.*)$", "^@utils/(.*)$", "^[./]"],
+    "importOrderSeparation": true,
+    "importOrderSortSpecifiers": true
+}
+ 
