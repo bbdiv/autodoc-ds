@@ -15,9 +15,11 @@
     "build": "vite build",
     "test": "vitest"
   },
-  "publishConfig": {
-  "@bbdiv:registry": "https://npm.pkg.github.com"
-},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bbdiv/autodoc-ds"
+  },
+
   "keywords": [],
   "author": "",
   "license": "ISC",
