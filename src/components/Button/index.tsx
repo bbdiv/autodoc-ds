@@ -1,4 +1,5 @@
 // src/components/Button.tsx
+//teste trigger
 import React from "react";
 import { button } from "./Button.css.ts";
 
