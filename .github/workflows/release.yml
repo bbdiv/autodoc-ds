@@ -6,18 +6,11 @@ on:
 
 jobs:
   release:
-    name: Tag and Publish
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Override remote URL to use GH_PAT
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-        run: |
-          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -25,9 +18,9 @@ jobs:
           node-version: 18
           registry-url: https://registry.npmjs.org/
 
-      - name: Get current version from package.json
+      - name: Get version from package.json
         id: get_version
-        run: echo "version=v$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
 
       - name: Fetch all tags
         run: git fetch --tags
@@ -35,31 +28,24 @@ jobs:
       - name: Check if tag already exists
         id: check_tag
         run: |
-          if git rev-parse "$TAG" >/dev/null 2>&1; then
+          if git rev-parse "v${{ steps.get_version.outputs.version }}" >/dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
-        env:
-          TAG: ${{ steps.get_version.outputs.version }}
 
-      - name: Debug GH_PAT presence
-        run: |
-          echo "GH_PAT is: ${GH_PAT:0:4}********"
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-
-      - name: Create Git tag
+      - name: Set PAT remote URL (for tag push)
         if: steps.check_tag.outputs.exists == 'false'
-        env:
-          TAG: ${{ steps.get_version.outputs.version }}
-          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag "$TAG"
-          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git
-          git push origin "$TAG"
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
+
+      - name: Create and push Git tag
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag "v${{ steps.get_version.outputs.version }}"
+          git push origin "v${{ steps.get_version.outputs.version }}"
 
       - name: Publish to npm
         if: steps.check_tag.outputs.exists == 'false'
