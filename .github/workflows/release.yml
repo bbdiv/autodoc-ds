@@ -13,6 +13,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Override remote URL to use GH_PAT
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -37,13 +43,23 @@ jobs:
         env:
           TAG: ${{ steps.get_version.outputs.version }}
 
+      - name: Debug GH_PAT presence
+        run: |
+          echo "GH_PAT is: ${GH_PAT:0:4}********"
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+
       - name: Create Git tag
         if: steps.check_tag.outputs.exists == 'false'
+        env:
+          TAG: ${{ steps.get_version.outputs.version }}
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag ${{ steps.get_version.outputs.version }}
-          git push origin ${{ steps.get_version.outputs.version }}
+          git tag "$TAG"
+          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git
+          git push origin "$TAG"
 
       - name: Publish to npm
         if: steps.check_tag.outputs.exists == 'false'
