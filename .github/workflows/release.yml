@@ -33,9 +33,17 @@ jobs:
         run: |
           if git rev-parse "v${{ steps.get_version.outputs.version }}" >/dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
+            echo "::error::Tag v${{ steps.get_version.outputs.version }} already exists. Aborting release."
+            exit 1
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the project
+        run: npm run build
 
       - name: Create and push Git tag
         if: steps.check_tag.outputs.exists == 'false'
