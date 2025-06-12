@@ -1,9 +1,9 @@
-import { Button } from '@components/Button';
-import React from 'react';
+// import { Button } from '@components/Button';
+// import React from 'react';
 
 
-const App: React.FC = () => {
-  return <Button>CLickaasadsadsadasds</Button>;
-}
+// const App: React.FC = () => {
+//   return <Button>CLickaasadsadsadasds</Button>;
+// }
 
-export default App;
+// export default App;

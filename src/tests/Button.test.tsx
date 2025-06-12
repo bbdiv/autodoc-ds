@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect } from 'vitest';
-import { Button } from '../components/Button/index.tsx';
+import Button from '../components/Button';
 
 describe('Button', () => {
   it('renders with provided text', () => {

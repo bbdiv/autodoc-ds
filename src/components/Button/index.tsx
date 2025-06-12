@@ -2,6 +2,8 @@
 import React from 'react';
 import { button } from './Button.css.ts';
 
-export const Button: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
+const  Button: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ children }) => {
   return <button className={button}>{children}</button>;
 };
+
+export default Button;
